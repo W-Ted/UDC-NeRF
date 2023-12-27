@@ -1,0 +1,103 @@
+
+
+---
+dataset_name: udc_dataset_scannet_multi
+dataset_extra:
+  # rendering params
+  near: 0.3
+  far: 6.0
+  scale_factor: 2.0
+  # when using bbox, this would be overwrited by bbox center
+  scene_center: [1.22492401, 1.87922737, 0.45732728]
+
+  # frame selection via idx
+  train_start_idx: 0
+  train_skip_step: 1
+  train_max_size: 9999 
+  validate_idx: 400
+
+  split:  datasets/split/scannet_0024_train_0.5/
+
+  # enable_observation_check: false
+  # object params
+  use_instance_mask: true
+  use_bbox: false
+  use_bbox_only_for_test: true
+  
+  root_dir: ../../object_nerf/data/scannet_prepare/processed/processed_scannet_0024_00/ 
+  bbox_dir: ../../object_nerf/data/scannet_prepare/processed/scannet_train_detection_data/ #datasets/desk_bbox/desk2/bbox.json
+  inst_seg_tag: 'instance-filt'
+  
+  val_instance_id: 9
+  instance_id: [0, 9]
+
+  # background that cannot be occluders, e.g., floor, ceil, wall
+  bg_instance_id: [0]
+
+  # pcd_path: ../../object_nerf/data/scannet_prepare/processed/processed_scannet_0024_00/point_clouds_simplified_clean.ply #data/toy_desk/our_desk_2/pcd_from_mesh.ply
+  
+  # # parameters for voxel features
+  # voxel_size: 0.1
+  # neighbor_marks: 3
+
+  mask_rebalance_strategy: fg_bg_reweight
+  fg_weight: 1.0
+  bg_weight: 0.05
+  erode_instance_mask: false #true
+  
+  # ps
+  ps_type: normal
+  ps_root: preprocess/scannet0024_lamaout_bg
+  scans_dir: ../../object_nerf/data/scannet_prepare/scans/
+  scene_id: scene0024_00
+
+train:
+  limit_train_batches: 1.0
+  num_epochs: 100
+  num_gpus: 4
+  batch_size: 2048 
+  stage1_lr_ratio: 0.3
+  chunk: 131072
+  chunk_eval: 8192
+  scene_name: scannet0024
+
+
+loss:
+  color_loss_guidance_weight: 10.0 
+  color_loss_unmasked_weight: 30.0 
+  color_loss_unmasked_ps_weight: 1.0 
+  color_loss_fused_weight: 10.0 
+  color_loss_merged_weight: 10.0 
+  opacity_loss_weight: 10.0 
+  reg_loss_modisigam_weight: 0.001
+
+model:
+  frustum_bound: -1 # disabled for ToyDesk data
+  use_voxel_embedding: false
+  slot_dim: 64
+  N_importance: 64
+  use_zero_as_last_delta: false
+
+  # specific for object branch
+  inst_D: 4
+  inst_W: 256
+  inst_W_code: 64
+  inst_skips: [2]
+  inst_K: 2
+
+  # block params
+  use_fused_alpha_for_opacity: false
+  remove_bgobj: false
+  block_epoch: -1
+  block_type: 'sigma'
+  gumbel_tau: 0.1 
+
+  # objcode related param:
+  obj_code_type: 'embed' # 'param', 'embed'
+
+  # coarse network and sampling
+  use_which_weight_for_fine: 'global' #  ['global', 'local', 'comp']
+
+  # 
+  sample_type: 'two_category' # 'two_category' 'k_category'
+  forced_p: [0.7,0.3] # 

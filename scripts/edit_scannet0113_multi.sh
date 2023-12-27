@@ -1,0 +1,5 @@
+    ~/anaconda3/envs/udcnerf/bin/python -u edit_udc.py \
+    dataset_config=config/scannet0113_multi.yml \
+    "img_wh=[640,480]" \
+    exp_name=udc_scannet0113_multi_edit \
+    ckpt_path="pretrained_ckpts/scannet0113_multi/last.ckpt"
